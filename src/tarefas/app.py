@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request
-from tarefas import init_db  # Importa a função do arquivo tarefas.py local
+from flask import Flask, render_template, request, redirect, url_for
+from tarefas import init_db
+from tarefas.models.tarefa import Tarefa  # Importa o seu Model Tarefa
 
 app = Flask(__name__)
 
@@ -20,30 +21,26 @@ def home():
         titulo_form = request.form.get('tituloTarefa')
         data_conclusao_form = request.form.get('dataConclusao')
 
-        # Se você tiver a classe Tarefa implementada:
-        # Tarefa.criar(titulo=titulo_form, data_conclusao=data_conclusao_form)
-
-    # Exemplo de lista de tarefas fictícia enviada para o template
-    tarefas = [
-        {
-            "id_tarefa": 1,
-            "titulo_tarefa": "Exemplo de tarefa 1",
-            "data_conclusao": "2026-11-11 00:00:00",
-        },
-        {
-            "id_tarefa": 2,
-            "titulo_tarefa": "Exemplo de tarefa 2",
-            "data_conclusao": "2026-11-11 00:00:00",
-        }
-    ]
-
+        # Salva a nova tarefa no banco de dados usando o Model
+        nova_tarefa = Tarefa(titulo=titulo_form, data_conclusao=data_conclusao_form)
+        nova_tarefa.salvarTarefa()
         
+        return redirect(url_for('home'))
+
+    # Busca as tarefas reais do banco de dados
+    tarefas = Tarefa.listarTarefas()
 
     return render_template(
         'base.html',
         titulo_da_pagina='Minha lista de tarefas',
         tarefas_da_pagina=tarefas,
     )
+
+
+@app.route('/apagar/<int:id_tarefa>')
+def apagar(id_tarefa):
+    Tarefa.apagarTarefa(id_tarefa)
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
