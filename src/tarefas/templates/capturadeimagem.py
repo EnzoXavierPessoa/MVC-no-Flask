@@ -1,33 +1,25 @@
 import cv2
 
-# 0 representa a webcam padrão do computador (se tiver outra câmera externa, tente 1)
+# Abrir a câmera
 camera = cv2.VideoCapture(0)
 
-if not camera.isOpened():
-    print("Erro: Não foi possível acessar a webcam.")
-else:
-    print("Pressione 's' para salvar a foto ou 'q' para sair.")
+while True:
+    # Capturar imagem
+    sucesso, imagem = camera.read()
 
-    while True:
-        # Lê cada quadro (frame) da câmera
-        ret, frame = camera.read()
+    if not sucesso:
+        print("Erro ao acessar a câmera")
+        break
 
-        if not ret:
-            print("Falha ao capturar imagem.")
-            break
+    # Mostrar imagem
+    cv2.imshow("Minha Webcam", imagem)
 
-        # Exibe a imagem em uma janela
-        cv2.imshow("Captura de Imagem - OpenCV", frame)
+    # Pressione ESPAÇO para capturar
+    if cv2.waitKey(1) == 32:
+        cv2.imwrite("captura.jpg", imagem)
+        print("Imagem salva com sucesso!")
+        break
 
-        # Aguarda 1ms por uma tecla pressionada
-        tecla = cv2.waitKey(1) & 0xFF
-
-        if tecla == ord('s'):
-            cv2.imwrite("foto_capturada.png", frame)
-            print("Foto salva com sucesso como 'foto_capturada.png'!")
-        elif tecla == ord('q') or tecla == 27:  # 'q' ou tecla ESC
-            break
-
-
+# Encerrar câmera
 camera.release()
 cv2.destroyAllWindows()
