@@ -1,82 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titulo_da_pagina }}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .task-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            padding: 2rem;
-            margin-top: 3rem;
-        }
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            background-color: #f1f3f5;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6 task-card">
-                <h2 class="text-center mb-4 text-primary">Gerenciador de Tarefas</h2>
-                
-                <!-- Formulário enviando via POST para o Flask -->
-                <form method="POST" action="{{ url_for('home') }}">
-                    <div class="mb-3">
-                        <label for="tituloTarefa" class="form-label fw-bold">Descrição da Tarefa</label>
-                        <input type="text" id="tituloTarefa" name="tituloTarefa" class="form-control" placeholder="Digite a tarefa..." required>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="dataConclusao" class="form-label fw-bold">Data de Conclusão (Opcional)</label>
-                        <input type="date" id="dataConclusao" name="dataConclusao" class="form-control">
-                    </div>
+<form action="{{ url_for('editar', id_tarefa=tarefa_edicao.id) if tarefa_edicao else url_for('home') }}" method="POST">
+    <input 
+        type="text" 
+        name="tituloTarefa" 
+        placeholder="Título da tarefa" 
+        value="{{ tarefa_edicao.titulo if tarefa_edicao else '' }}" 
+        required
+    >
+    <input 
+        type="date" 
+        name="dataConclusao" 
+        value="{{ tarefa_edicao.data_conclusao if tarefa_edicao else '' }}" 
+        required
+    >
+    <button type="submit">
+        {{ 'Salvar Alterações' if tarefa_edicao else 'Adicionar Tarefa' }}
+    </button>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-4">Adicionar Tarefa</button>
-                </form>
-
-                <hr>
-
-                <h4 class="mb-3">Suas Tarefas</h4>
-                <div id="listaTarefas">
-                    {% if tarefas_da_pagina %}
-                        {% for tarefa in tarefas_da_pagina %}
-                            <div class="task-item">
-                                <span>
-                                    <strong>{{ tarefa.titulo_tarefa }}</strong>
-                                    {% if tarefa.data_conclusao %}
-                                        <small class="text-muted">({{ tarefa.data_conclusao }})</small>
-                                    {% endif %}
-                                </span>
-                                
-                                <a href="{{ url_for('apagar', id_tarefa=tarefa.id_tarefa) }}" 
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Tem certeza que deseja apagar esta tarefa?')">
-                                    Apagar
-                                </a>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted text-center">Nenhuma tarefa cadastrada.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+    {% if tarefa_edicao %}
+        <a href="{{ url_for('home') }}">Cancelar</a>
+    {% endif %}
+</form>
